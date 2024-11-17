@@ -51,38 +51,28 @@ namespace General.Apt.App.ViewModels.Pages.Video.AutoWipe
         {
             try
             {
-                if (!Directory.Exists(Input) || InputSortItem == null || SortRuleItem == null)
+                if (!Directory.Exists(this.Input) || this.InputSortItem == null || this.SortRuleItem == null)
                 {
-                    InputImageFirst = null;
+                    this.InputImageFirst = (ImageSource)null;
                 }
                 else
                 {
-                    var file = _indexService.GetFileFirst(Input, InputSort, SortRule);
-                    using var video = new VideoCapture();
-                    var mat = new Mat();
-                    video.Open(file);
-                    while (video.Read(mat))
-                    {
-                        InputImageFirst = mat.ToBytes().ToImage() as BitmapImage;
-                        break;
-                    }
+                    string fileFirst = this._indexService.GetFileFirst(this.Input, this.InputSort, this.SortRule);
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.UriSource = new Uri(fileFirst);
+                    bitmapImage.EndInit();
+                    this.InputImageFirst = (ImageSource)bitmapImage;
                 }
             }
             catch (Exception ex)
             {
-                InputImageFirst = null;
-                await Message.AddMessageError(ex.Message, MessageAction);
+                this.InputImageFirst = (ImageSource)null;
+                await Message.AddMessageError(ex.Message, this.MessageAction);
             }
             finally
             {
-                if (InputImageFirst == null)
-                {
-                    MaskDrawingSize = 1;
-                }
-                else
-                {
-                    MaskDrawingSize = 30;
-                }
+                this.MaskDrawingSize = this.InputImageFirst != null ? 30.0 : 1.0;
             }
         }
 
